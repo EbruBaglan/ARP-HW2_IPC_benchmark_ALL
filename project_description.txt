@@ -1,0 +1,44 @@
+////   BUILDING OF THE PROJECT   //// /// Group name: TTI
+                                      /// Group Members:  Tachadol Suthisomboon, Ebru Baglan
+The project is built and run typing:
+$ . install.sh <path name>  !!! BEWARE OF THE LACK OF SLASH BEFORE INSTALL COMMAND !!!
+$ ./run.sh <program> <size of array in KB> <size of buffer (only shared memory)>
+      note that: 1 for unnamed pipe | 2 for named pipe | 3 for socket | 4 for shared memory
+
+To initiate help file, the commands can be used as
+./help.sh   (to view project description file) or
+./help.sh <program (optional)>    (1 for unnamed pipe | 2 for named pipe | 3 for socket | 4 for shared memory)
+
+This project consists of 4 sub-program (unnamed pipe, named pipe, socket, and shared memory with circular memory)
+The objective of this project including:
+  -To benchmark the inter process communication (IPC) with given size of array
+  -To learn how to implement IPC in each method
+
+The result of IPC was reported in table below:
+----------------------------------------------------------------------------------------------------------------------------
+|         Methods       |       Run time 1st PC [s]  (1MB, 100MB)        |         Run time 2nd PC [s] (1MB, 100MB)        |
+----------------------------------------------------------------------------------------------------------------------------
+| Unnamed pipe          |               0.00056 0.0201                   |                 0.0018  0.090                   |
+| Named pipe            |               0.00075 0.0213                   |                 0.0030  0.093                   |
+| Socket                |               0.00074 0.0362                   |                 0.0009, 0.048                   |
+| Shared memory with CB |               0.00110 0.0594                   |                 0.0017, 0.077                   |
+----------------------------------------------------------------------------------------------------------------------------
+Test condition: Size of array = 1 MB and 100 MB, Type of data = Integer (4 bytes), (Circular buffer size 64 KB)
+*First PC:  Intel core i7-8750H with ram 16 GB DDR 4 2667 MHz and Intel NVME ssd
+*Second PC: Intel core i7-6700HQ wth ram 16 GB DDR 4 2667 MHz & Samsung NVME ssd (970PRO)
+
+Remark1: As far as we know, the communication speed depends on specs of computer. The result of socket may varies due to
+the size and speed of cache memory. While the shared memory, unnamed pipe and named pipe the speed may varies due to the
+size and speed or ram.
+ref: https://stackoverflow.com/questions/12202488/how-do-the-cpus-on-different-sockets-communicate?fbclid=IwAR37F3bfsFSOXZw0i8BwxeiuOnrsyrlRO3pyIkvZ1oR0XkWVLPKNu--hF_g
+
+Remark2: The reason why shared memory with CB is not the fastest can be due to various reasons such as
+1) Partial implementation of circular buffer can be one to blame. In fully integrated circular buffer, moving-head-and-tail
+approach is used, whereas in our code we kept them at zeroth index for transfer, and implemented semaphores.
+2) Memory page sizes of different architectures (generally 4KB and more). This limit can be overcome by using 'HugePages'
+concept, however both HugePages and Shared Memory have their own directories, which can be merged by introducing new tmpfs
+to /mnt directory. However we did not want to mess up with memory options of the evaluator, so kept this solution.
+Ref: https://stackoverflow.com/a/44960828
+
+
+--end of help--
